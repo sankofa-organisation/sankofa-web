@@ -6,7 +6,7 @@ import { Section, SectionHeader } from "@/components/ui/section";
 import { ButtonLink } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "About Us",
+  title: "About Sankofa",
   description:
     "Sankofa is a volunteer-led initiative, affiliated with IEEE Smart Village, with members across more than a dozen countries.",
 };
