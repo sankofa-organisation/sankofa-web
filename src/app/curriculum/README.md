@@ -1,18 +1,18 @@
-# `src/app/curriculum/` — the Curriculum page (`/curriculum`)
+# `src/app/curriculum/` — `/curriculum`
 
-**File:** `page.tsx`
-
-Explains how Sankofa teaches. It is a **server component**.
-
-## What is inside `page.tsx`
-
-| Part | What it is |
+| File | Kind |
 | --- | --- |
-| `stream` | The 6 STREAM subjects (Science, Technology, Reading, Engineering, Art, Mathematics) with icons. |
-| `principles` | The teaching ideas (learn from daily life, use local materials, ...). |
-| `themes` | The learning themes. |
-| `CurriculumPage()` | Draws the page with `PageHero`, `Section`, `SectionHeader` and `ButtonLink`. |
+| `page.tsx` | RSC, statically prerendered |
 
-## To change the text
+## Data (module-level constants)
 
-Edit the arrays at the top of the file.
+| Const | Content |
+| --- | --- |
+| `stream` | `{ icon, letter, word, note }[]` — the 6 STREAM disciplines |
+| `principles` | Pedagogical principles (local materials, daily life, culture, …) |
+| `themes` | Learning themes |
+
+## Composition
+
+`PageHero` → `Section` + `SectionHeader` blocks mapping over the arrays →
+`ButtonLink` calls to action. No client components.

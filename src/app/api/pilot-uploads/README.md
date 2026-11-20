@@ -1,40 +1,51 @@
-# `src/app/api/pilot-uploads/` — upload images and videos
+# `src/app/api/pilot-uploads/` — `/api/pilot-uploads`
 
-**File:** `route.ts` → URL `/api/pilot-uploads`
+Stores media for stories under `public/` so it is served immediately as a
+static file.
 
-The editor sends a file here when the author adds a photo or video to a story.
+## `POST` (`multipart/form-data`)
 
-## `POST` — upload one file
+| Field | Type | Notes |
+| --- | --- | --- |
+| `file` | `File` | required |
+| `slug` | string | folder name, passed through `safeSlug()` |
 
-The request is a **form** (`multipart/form-data`) with 2 fields:
+### Validation order
 
-| Field | Value |
+| Check | Failure |
 | --- | --- |
-| `file` | The image or video. |
-| `slug` | The pilot slug. The file is put in a folder with this name. |
+| `editorWritesAllowed()` | `403` |
+| `file instanceof File` | `400 { error: "No file was received." }` |
+| MIME in `allowed` map | `415` |
+| `file.size <= 25 MB` (`MAX_BYTES`) | `413` |
 
-### Steps
+`allowed` (MIME → extension): `image/jpeg→jpg`, `image/png→png`,
+`image/webp→webp`, `image/avif→avif`, `image/gif→gif`, `video/mp4→mp4`.
+The extension comes from the MIME type, not the uploaded name.
 
-1. If writes are not allowed → **403**.
-2. No file → **400**.
-3. Check the type. Only these are allowed → else **415**:
-   `image/jpeg`, `image/png`, `image/webp`, `image/avif`, `image/gif`, `video/mp4`.
-4. Check the size. Max **25 MB** → else **413**.
-5. Make a clean file name: lowercase, `-` instead of spaces, max 50 letters,
-   plus a short time code so two uploads with the same name do not overwrite
-   each other. Example: `my-photo-lx3k9a.jpg`.
-6. Save it to `public/pilots/uploads/<slug>/<name>`.
-7. Answer:
-   ```json
-   { "src": "/pilots/uploads/<slug>/<name>", "kind": "image" }
-   ```
-   `kind` is `"video"` for mp4, else `"image"`.
+### Storage
 
-Because the file is in `public/`, the browser can show it right away at the
-`src` address.
+```
+public/pilots/uploads/<safeSlug>/<stem>-<Date.now().toString(36)>.<ext>
+stem = original name without extension, lowercased, [^a-z0-9]+ → "-", max 50, fallback "media"
+```
 
-## If upload fails
+The timestamp suffix prevents overwriting on re-upload.
 
-The editor (`media-input.tsx`) has a backup plan: if the image is small, it
-keeps the picture inside the draft as a `data:` URL so the author can keep
-working. The author should then **Export** the draft so it is not lost.
+### Response
+
+```json
+200 { "src": "/pilots/uploads/<slug>/<name>", "kind": "image" | "video" }
+```
+
+`src` is directly usable as `Media.src`.
+
+## Client side
+
+Called from `MediaEditor` (`src/components/pilot-editor/media-input.tsx`).
+On failure, images ≤ 1.5 MB are kept inline as `data:` URLs in the draft.
+
+## Git note
+
+`*.mp4` is git-ignored, so uploaded videos will not be committed. Images will
+be, if you `git add` the `uploads/` folder.

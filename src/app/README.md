@@ -1,47 +1,44 @@
-# `src/app/` — pages, layout and APIs
+# `src/app/` — App Router
 
-This folder uses the **Next.js App Router**. The rule is simple:
+Next.js 16 file-system routing. Only special file names become routes
+(`page.tsx`, `layout.tsx`, `route.ts`, `not-found.tsx`, `icon.png`, …); other
+files, including these READMEs, are ignored by the router.
 
-> A folder with a `page.tsx` file becomes a web page.
-> A folder with a `route.ts` file becomes an API address.
+## Root files
 
-## Files directly in this folder
-
-| File | What it does |
-| --- | --- |
-| `layout.tsx` | The frame around **every** page. Loads the Poppins font, sets the site title and description (SEO), and adds the skip link, `CustomCursor`, `SiteHeader`, `FollowLinkedin` box and `SiteFooter`. |
-| `page.tsx` | The **home page** (`/`). Shows the `Hero`, the stats marquee, the vision text (typewriter), the approach cards, the STREAM letters, and photo sections. Text is stored in arrays at the top of the file (`approach`, `streamLetters`, `pillars`, ...). |
-| `not-found.tsx` | The **404 page**. Shown for any URL that does not exist. It is hidden from search engines (`robots: { index: false }`). The small logo here is commented out ("asked to temporaly remove"). |
-| `globals.css` | Global styles. All site colors are here as CSS variables (`--primary`, `--accent`, ...). Also the custom Tailwind helpers `container-page` and `container-prose`, and the keyframes for the marquee and typewriter caret. |
-| `icon.png` | The small browser tab icon (favicon). Next.js uses it because of its file name. It still shows the logo. |
-| `apple-icon.png` | The icon used when someone saves the site to an iPhone home screen. Also shows the logo. |
-
-## Sub-folders (pages)
-
-| Folder | URL | Read more |
+| File | Kind | Details |
 | --- | --- | --- |
-| `about/` | `/about` | [about/README.md](about/README.md) |
-| `curriculum/` | `/curriculum` | [curriculum/README.md](curriculum/README.md) |
-| `pilots/` | `/pilots` and `/pilots/<slug>` | [pilots/README.md](pilots/README.md) |
-| `pilot/` | `/pilot/create` (story editor) | [pilot/README.md](pilot/README.md) |
-| `members/` | `/members` | [members/README.md](members/README.md) |
-| `news/` | `/news` | [news/README.md](news/README.md) |
-| `contact/` | `/contact` | [contact/README.md](contact/README.md) |
-| `api/` | `/api/...` (no page, only data) | [api/README.md](api/README.md) |
+| `layout.tsx` | Root layout (RSC) | Loads Poppins via `next/font/google` (`--font-poppins`, weights 400–700, `display: swap`). Exports global `metadata`: `metadataBase: https://teachsankofa.org`, `title.template: "%s · Sankofa"`, description, Open Graph. Renders skip link → `CustomCursor` → `SiteHeader` → `<main id="main">{children}<FollowLinkedin/></main>` → `SiteFooter`. |
+| `page.tsx` | Route `/` (RSC, static) | Home. Content in module-level consts: `VISION`, `approach`, `streamLetters`, `pillars`, `outcomes`, `values`, `pilots` (local teaser list, **not** `lib/pilots`). Composes `Hero`, `StatsMarquee`, `Section`, `SectionHeader`, `FocusBlur`, `RevealGroup/Item`, `TiltCard`, `Typewriter`. |
+| `not-found.tsx` | 404 boundary | Used for unknown URLs and `notFound()` calls. `robots: { index: false, follow: true }`. Brand mark commented out ("asked to temporaly remove"). |
+| `globals.css` | Global stylesheet | Tailwind 4 entry, design tokens, `@theme inline` mapping, base layer, `container-page`/`container-prose` utilities, keyframes (rise, marquee, caret), cursor and reduced-motion rules. See root README §11. |
+| `icon.png` (64×64), `apple-icon.png` (180×180) | File-based metadata | Next emits `<link rel="icon">` / `apple-touch-icon` automatically. Still show the logo. |
 
-## Each page also exports `metadata`
+## Routes
 
-```ts
-export const metadata: Metadata = {
-  title: "About Us",          // shows as "About Us · Sankofa" in the tab
-  description: "...",         // for Google and link previews
-};
+| Folder | URL | Rendering | README |
+| --- | --- | --- | --- |
+| `about/` | `/about` | static | [→](about/README.md) |
+| `curriculum/` | `/curriculum` | static | [→](curriculum/README.md) |
+| `pilots/` | `/pilots`, `/pilots/[slug]` | static / SSG | [→](pilots/README.md) |
+| `pilot/create/` | `/pilot/create` | static shell + client app | [→](pilot/README.md) |
+| `members/` | `/members` | static | [→](members/README.md) |
+| `news/` | `/news` | static | [→](news/README.md) |
+| `contact/` | `/contact` | static | [→](contact/README.md) |
+| `api/` | `/api/*` | dynamic route handlers | [→](api/README.md) |
+
+## Page contract
+
+Every page file:
+
+```tsx
+import type { Metadata } from "next";
+export const metadata: Metadata = { title: "About Us", description: "…" };
+export default function AboutPage() { /* RSC */ }
 ```
 
-The `· Sankofa` part is added by the `title.template` in `layout.tsx`.
-
-## Note
-
-`README.md` files in this folder are safe. Next.js only turns special file
-names (`page.tsx`, `route.ts`, `layout.tsx`, ...) into routes. It ignores
-everything else.
+- `title` is combined with the root template → `About Us · Sankofa`.
+- Pages are synchronous RSCs with no data fetching, so Next prerenders them
+  as static HTML at build time (`○` in build output).
+- Inner pages start with `<PageHero eyebrow title description?>` and then a
+  series of `<Section tone=…>` blocks wrapped in `container-page`.

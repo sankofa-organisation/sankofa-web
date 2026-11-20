@@ -1,19 +1,23 @@
-# `src/app/news/` — the News page (`/news`)
+# `src/app/news/` — `/news`
 
-**File:** `page.tsx`
-
-A simple list of news posts. There is no CMS or database.
-
-## What is inside `page.tsx`
-
-| Part | What it is |
+| File | Kind |
 | --- | --- |
-| `type Post` | The shape of one post: `title`, `date`, `excerpt`, `tag`, and an optional `href` (link) and `external` (opens in a new tab). |
-| `featured` | The one big post at the top. |
-| `posts` | The rest of the posts, shown as cards. |
-| `NewsPage()` | Draws the page. |
+| `page.tsx` | RSC, statically prerendered |
 
-## To add a news post
+## Model
 
-Add a new object at the **top** of the `posts` array (newest first), or
-replace `featured` if it should be the big one.
+```ts
+type Post = {
+  title: string;
+  date: string;       // display string, not parsed
+  excerpt: string;
+  tag: string;
+  href?: string;      // optional link
+  external?: boolean; // true → opens in new tab
+};
+const featured: Post;   // large card at top
+const posts: Post[];    // grid, rendered in array order
+```
+
+No CMS: posts are hard-coded. Add new posts at the start of `posts` (newest
+first) or replace `featured`. Most posts link out to LinkedIn.

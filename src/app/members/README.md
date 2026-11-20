@@ -1,24 +1,26 @@
-# `src/app/members/` — the Members page (`/members`)
+# `src/app/members/` — `/members`
 
-**File:** `page.tsx`
+| File | Kind |
+| --- | --- |
+| `page.tsx` | RSC, statically prerendered |
 
-Shows a card for every Sankofa working-group member.
+## Data flow
 
-## How it works
+```
+lib/members.ts  members: Member[]  ──┐
+                                     ├─► MembersPage → <ul> of member cards
+page.tsx        photos: Record<name, "/members/…">  ┘
+page.tsx        groupStyles: Record<WorkingGroup, tailwind classes>
+```
 
-1. The list of people comes from `src/lib/members.ts` (`members` array).
-2. The `photos` map at the top of `page.tsx` links a member **name** to a
-   photo in `public/members/`. Example:
-   ```ts
-   "Amira Ouerfelli": "/members/Amira.png",
-   ```
-   If a name is not in the map, the card shows the person's initials instead.
-3. `groupStyles` gives each working group (Curricula / Communication /
-   Implementation) its own badge color.
+- `Member = { name, country, groups: WorkingGroup[] }`.
+- Portrait lookup is `photos[m.name]` — **exact string match**. Missing → an
+  `initials(name)` panel is rendered instead.
+- `groupStyles` colours the working-group badges.
+- List `key` is `m.name` (names must be unique).
 
-## To add a person
+## Privacy
 
-1. Add them to `src/lib/members.ts`.
-2. (Optional) Put their photo in `public/members/` and add a line to `photos`.
-
-**The name must match exactly** in both places, or the photo will not show.
+Contact details were removed from the data on purpose. Do not reintroduce
+email/phone fields: anything used while rendering (including React keys) ends
+up in the public HTML/RSC payload.

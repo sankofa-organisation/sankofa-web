@@ -1,27 +1,29 @@
-# `src/` — all the code
+# `src/`
 
-Everything that makes the website lives here. There are 3 folders:
+All application source. Compiled by Next.js; nothing here is served raw.
 
-| Folder | What is inside | Has UI? |
+| Folder | Responsibility | May import from |
 | --- | --- | --- |
-| [`app/`](app/README.md) | The pages. Each folder is one URL. Also the server APIs. | Yes |
-| [`components/`](components/README.md) | Reusable pieces used by the pages (header, buttons, animations, editor). | Yes |
-| [`lib/`](lib/README.md) | Data (pilots, members, menu links) and helper functions. | No |
+| [`app/`](app/README.md) | Routing (App Router): pages, layouts, route handlers, metadata, global CSS | `components/`, `lib/` |
+| [`components/`](components/README.md) | Reusable React components (server and client) | `lib/`, other components |
+| [`lib/`](lib/README.md) | Types, content data, pure logic, server-only helpers | `lib/` only (+ React in `rich-text.tsx`) |
 
-## Simple rule
+Dependency direction is one-way: `app → components → lib`. `lib` must not
+import from `app` or `components`.
 
-- A **page** (in `app/`) puts components together and adds the text.
-- A **component** (in `components/`) is a piece you can use on many pages.
-- **lib** holds data and logic. It does not draw anything (except
-  `rich-text.tsx`, which turns small text marks into bold/italic/links).
+## Path alias
 
-## Import shortcut
+`tsconfig.json`: `"paths": { "@/*": ["./src/*"] }`. Always import across
+folders with `@/…` (e.g. `@/lib/pilots`); use relative imports only inside the
+same folder (e.g. `./block-editor`).
 
-`@/` means this `src/` folder. Example:
+## Server / client boundary
 
-```ts
-import { members } from "@/lib/members";      // = src/lib/members.ts
-import { Section } from "@/components/ui/section";
-```
-
-This is set in `tsconfig.json` (`"paths": { "@/*": ["./src/*"] }`).
+- Default: React Server Component (RSC).
+- `"use client"` at the top of a file makes it — and everything it imports — part
+  of the client bundle.
+- `src/lib/pilot-editor-server.ts` uses `node:path` and must only be imported
+  by route handlers. `src/lib/pilot-draft.ts` touches `window.localStorage`
+  behind `typeof window` guards and is safe on both sides.
+- Values passed from an RSC to a client component (props) are serialised into
+  the page payload and are publicly visible.

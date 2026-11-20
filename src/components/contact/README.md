@@ -1,26 +1,27 @@
-# `src/components/contact/` — the contact form
+# `src/components/contact/` — `ContactForm` (client)
 
-**File:** `contact-form.tsx` (client component)
+```ts
+const RECIPIENT = "info@teachsankofa.org";
+```
 
-## How it works
+## Flow
 
-There is **no backend** and no email service. The form only opens the
-visitor's own email app.
+```
+state: name, email, message, sending
+submit
+  → preventDefault; ignore if sending; setSending(true)
+  → subject = encodeURIComponent(`Message from ${name || "the website"}`)
+  → body    = encodeURIComponent(`Name: …\nEmail: …\n\n${message}`)
+  → setTimeout(5000) → window.location.href = `mailto:${RECIPIENT}?subject=…&body=…`
+```
 
-1. The visitor types name, email and message (kept in `useState`).
-2. On submit, the code builds a `mailto:` link:
-   ```
-   mailto:info@teachsankofa.org?subject=Message from <name>&body=Name: ...\nEmail: ...\n\n<message>
-   ```
-   (Text is made safe with `encodeURIComponent`.)
-3. It shows a short "sending" state, waits **5 seconds**, then sets
-   `window.location.href = mailto`. The email app opens with everything filled in.
-4. The visitor must press **Send** in their email app.
+- No network request, no backend, no spam protection, no delivery guarantee —
+  the visitor must have a mail client and press Send there.
+- The 5-second delay is purely visual (a "sending" state).
+- `sending` is never reset, so a second submit requires a page reload.
 
-## Things to know
+## Replacing with real delivery
 
-- If the visitor has no email app set up, nothing happens.
-- To change the address, edit `RECIPIENT` here **and** `EMAIL` in
-  `src/app/contact/page.tsx`.
-- To get real form sending later, replace step 2–3 with a `fetch()` to an API
-  route or a form service.
+Add a route handler (e.g. `src/app/api/contact/route.ts`) that sends via an
+email provider, `fetch()` it from `handleSubmit`, and show success/error
+states. Keep `RECIPIENT` in sync with `EMAIL` in `src/app/contact/page.tsx`.

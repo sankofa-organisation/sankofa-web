@@ -1,39 +1,39 @@
-# `src/app/api/pilot-drafts/` — save, list and delete drafts
+# `src/app/api/pilot-drafts/` — `/api/pilot-drafts`
 
-**File:** `route.ts` → URL `/api/pilot-drafts`
+Persists `PilotDraft` objects (type in `src/lib/pilot-draft.ts`) as JSON files:
+`content/pilot-drafts/<safeSlug(slug || id)>.json` (2-space indented, trailing
+newline). The `content/` directory is created on first write.
 
-A **draft** is a pilot story that is not published yet. Its shape is
-`PilotDraft` (see `src/lib/pilot-draft.ts`). Drafts are saved as JSON files in:
+## `GET`
 
-```
-content/pilot-drafts/<slug>.json
-```
+| Case | Response |
+| --- | --- |
+| OK | `200 { drafts: PilotDraft[], writable: boolean }` — sorted by `updatedAt` desc |
+| folder missing (`ENOENT`) | `200 { drafts: [], writable }` |
+| other read/parse error | `500 { error }` |
 
-(The `content/` folder is created the first time you save.)
+`GET` is allowed even when writes are disabled; `writable` tells the client.
 
-## `GET` — list drafts
+## `POST`
 
-1. Read every `.json` file in `content/pilot-drafts/`.
-2. Sort them, newest first (by `updatedAt`).
-3. Answer: `{ drafts: [...], writable: true | false }`.
+Body: `PilotDraft` (JSON).
 
-If the folder does not exist yet, it answers with an empty list (not an error).
-`writable` tells the editor if the Save button can work.
+| Case | Response |
+| --- | --- |
+| writes disabled | `403 { error }` |
+| invalid JSON | `400 { error: "Malformed draft." }` |
+| missing/non-string `id` | `400 { error: "Draft is missing an id." }` |
+| OK | `200 { draft, savedTo }` — `draft.updatedAt` replaced with server time; `savedTo` is relative to `cwd` |
 
-## `POST` — save a draft
+Same slug → file is overwritten. The body is not schema-validated beyond `id`.
 
-1. If writes are not allowed → **403**.
-2. Read the JSON body. Bad JSON → **400**. No `id` → **400**.
-3. Set `updatedAt` to now.
-4. Write the file `content/pilot-drafts/<safeSlug(slug or id)>.json`.
-5. Answer: `{ draft, savedTo: "content/pilot-drafts/xyz.json" }`.
+## `DELETE ?slug=<slug>`
 
-Saving the same slug again **overwrites** the old file.
+| Case | Response |
+| --- | --- |
+| writes disabled | `403` |
+| deleted or already missing | `200 { ok: true }` |
+| other unlink error | `500 { error }` |
 
-## `DELETE` — remove a draft
-
-Call `/api/pilot-drafts?slug=xyz`.
-
-1. If writes are not allowed → **403**.
-2. Delete `content/pilot-drafts/xyz.json`.
-3. If the file was already gone, that is fine. Answer `{ ok: true }`.
+Note: the editor client currently only calls `POST`; drafts listed in the
+editor's drawer come from `localStorage`.

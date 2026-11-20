@@ -14,7 +14,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://sankofa.org"),
+  metadataBase: new URL("https://teachsankofa.org"),
   title: {
     default: "Sankofa — Community-led STREAM education",
     template: "%s · Sankofa",

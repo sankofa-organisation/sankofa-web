@@ -1,19 +1,42 @@
-# `src/components/home/` — home page pieces
+# `src/components/home/` — home page sections
 
-These are only used on the home page (`src/app/page.tsx`).
+Used only by `src/app/page.tsx`.
 
-| File | Client? | What it does |
-| --- | --- | --- |
-| `hero.tsx` | yes | The big top section. Dark background photo (`public/image.jpg`), floating color orbs that move with scroll (parallax), the headline that appears word by word, two buttons (Curriculum, Survey) and a scroll hint. **The 3D logo card on the right is commented out** ("asked to temporaly remove"). |
-| `stats-marquee.tsx` | no | A strip of numbers (14 countries, STREAM, 5+ pilots, 1M children) that scrolls sideways forever. The list is drawn twice and moved by -50% in a loop, so it looks endless. The CSS is in `globals.css` (`.marquee-track`). Stops on hover. |
-| `tiassale-section.tsx` | no | A section about Tiassalé, Côte d'Ivoire with a YouTube video (`VIDEO_ID`). **Not used on any page right now.** |
+## `hero.tsx` — `Hero` (client)
 
-## How the hero animations work (short)
+Structure:
 
-- `useScroll` + `useTransform` → when you scroll, the orbs move up/down at
-  different speeds (parallax).
-- The headline words are in the `headline` array. `wordContainer` and `word`
-  are motion "variants" that show each word 0.07 s after the last one.
-- The 3D tilt code (`rx`, `ry`, `handlePointer`, `resetTilt`) is still in the
-  file. It was only used by the logo card, so ESLint now warns that those
-  values are unused. Leave them; they are needed when the logo comes back.
+```
+<section ref=heroRef>
+  background: next/image /image.jpg (fill, priority, brightness 0.4) + gradient
+              two blurred orbs, y driven by useScroll(heroRef) → useTransform
+  grid lg:[1.1fr_0.9fr]
+    left:  <h1> words from `headline` + `accentLine`, animated with variants
+           (staggerChildren 0.07, each word y 0.5em→0, rotateX -40→0)
+           paragraph, CTA links (/curriculum, survey bit.ly), tagline
+    right: 3D logo card — COMMENTED OUT ("asked to temporaly remove")
+  scroll cue (lg only)
+  SVG "dripping paint" divider into the page background
+```
+
+- Pointer tilt state (`rx`, `ry`, `rotateX`, `rotateY`, `handlePointer`,
+  `resetTilt`, `cardRef`) is still declared for the hidden card; ESLint warns
+  they are unused. Do not delete if the logo is coming back.
+- Restoring the card: remove the `{/* asked to temporaly remove … */}`
+  wrapper and convert the inner `// …` note lines back into `{/* … */}`.
+- With reduced motion, `initial` is `false` and parallax offsets are 0.
+
+## `stats-marquee.tsx` — `StatsMarquee` (server)
+
+- Data: local `stats: { value, label }[]`.
+- Pure CSS animation: `.marquee-track` contains the list **twice**; keyframes
+  translate `0 → -50%` so the loop is seamless. Duration via inline CSS var
+  `--marquee-duration: 32s`. `.marquee-group:hover` pauses it.
+- First `<ul>` has `aria-label`; the duplicate is `aria-hidden`.
+- Rendered inside `<Section tone="ink">`; edge fades use `from-foreground`.
+
+## `tiassale-section.tsx` — `TiassaleSection` (server)
+
+Bilingual section about Tiassalé, Côte d'Ivoire, with a YouTube embed via
+`youtube-nocookie.com/embed/${VIDEO_ID}`. **Not mounted** on any page.
+Import and place it in `app/page.tsx` to use it.

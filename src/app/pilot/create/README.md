@@ -1,7 +1,8 @@
 # `src/app/pilot/create/` — `/pilot/create`
 
-**File:** `page.tsx`
+```tsx
+export const metadata: Metadata = { title: "Create a pilot story", robots: { index: false, follow: false } };
+export default function CreatePilotPage() { return <PilotEditor />; }
+```
 
-This page only shows the `PilotEditor` component and tells search engines not
-to index it. See `../README.md` and `src/components/pilot-editor/README.md` for
-how the editor works.
+Everything else is in `src/components/pilot-editor/`.

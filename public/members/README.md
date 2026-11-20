@@ -1,24 +1,15 @@
-# `public/members/` — member photos
+# `public/members/` — portraits
 
-Photos shown on the Members page (`/members`).
+Served at `/members/<file>`.
 
-## How a photo is linked to a person
+| Consumer | Lookup |
+| --- | --- |
+| `src/app/members/page.tsx` | `photos: Record<string, string>` keyed by exact `Member.name` |
+| `src/app/about/page.tsx` | `leadership[].photo` |
 
-The file name does **not** do it by itself. The link is the `photos` map at the
-top of `src/app/members/page.tsx`:
+File names are free-form (mostly first or last name, `.jpg`/`.png`); the
+mapping in code is what links a file to a person. A member without an entry
+gets an initials panel.
 
-```ts
-const photos: Record<string, string> = {
-  "Amira Ouerfelli": "/members/Amira.png",
-  ...
-};
-```
-
-The key must be the **exact** name from `src/lib/members.ts`.
-
-## To add a photo
-
-1. Put the file here (square-ish `.jpg` or `.png`, about 600×600 px is enough).
-2. Add one line to `photos` in `src/app/members/page.tsx`.
-
-People with no photo show their initials instead.
+Recommended: square crop, ~600×600 px, faces centred (cards use
+`object-cover`).

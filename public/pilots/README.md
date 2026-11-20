@@ -1,41 +1,33 @@
-# `public/pilots/` — media for pilot stories
+# `public/pilots/` — story media
 
-One folder per pilot. **The folder name is the pilot's slug.**
+Convention: **one folder per pilot `slug`**. `src/lib/pilots.ts` declares a
+base path per story and builds `Media.src` from it:
 
-| Folder | Story |
-| --- | --- |
-| `tanzania-network/` | `/pilots/tanzania-network` |
-| `echipparra-kerala/` | `/pilots/echipparra-kerala` |
-| `uganda-banana-fibre/` | `/pilots/uganda-banana-fibre` |
-
-In `src/lib/pilots.ts` each story has a short constant for its folder, for
-example:
-
-```ts
-const TZ = "/pilots/tanzania-network";
-// ...
-src: `${TZ}/morning-circle.jpg`,
-```
+| Folder | Const in `pilots.ts` | Route |
+| --- | --- | --- |
+| `uganda-banana-fibre/` | `UG` | `/pilots/uganda-banana-fibre` |
+| `echipparra-kerala/` | `KL` | `/pilots/echipparra-kerala` |
+| `tanzania-network/` | `TZ` | `/pilots/tanzania-network` |
 
 ## Naming
 
-Use lowercase words with `-`, that say what is in the picture:
-`planting-a-seedling.jpg`, not `IMG_2034.JPG`. Files ending in `-poster.jpg`
-are the still image shown before a video plays.
+- kebab-case, descriptive (`planting-a-seedling.jpg`).
+- Video stills: `<video-name>-poster.jpg`, used as `Media.poster`.
 
-## `uploads/` (created by the editor)
-
-When you add a picture in the story editor (`/pilot/create`) while running
-`npm run dev`, it is saved to:
+## Missing videos (git-ignored, must be deployed separately)
 
 ```
-public/pilots/uploads/<slug>/<name>-<time code>.<ext>
+uganda-banana-fibre/the-compound.mp4
+uganda-banana-fibre/introducing-the-fibre.mp4
+uganda-banana-fibre/ball-play.mp4
+uganda-banana-fibre/laughter-and-connection.mp4
+tanzania-network/a-class-in-session.mp4
 ```
 
-This folder does not exist until the first upload. After you publish a story
-you can move those files into a normal `<slug>/` folder and update the paths.
+Without them, the `<video>` elements show the poster but cannot play.
 
-## Videos
+## `uploads/` (generated)
 
-`.mp4` files are in `.gitignore` (big files), so they are **not in git**. If a
-story uses a video, make sure the file is on the server when you deploy.
+Created by `POST /api/pilot-uploads` in dev:
+`uploads/<safeSlug>/<stem>-<time36>.<ext>`. After publishing a story you may
+move files into the pilot's own folder and update the paths in `pilots.ts`.

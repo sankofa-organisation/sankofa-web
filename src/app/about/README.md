@@ -1,21 +1,24 @@
-# `src/app/about/` — the About Us page (`/about`)
+# `src/app/about/` — `/about`
 
-**File:** `page.tsx`
-
-This page tells who Sankofa is. It is a **server component** (no `"use client"`),
-so it is turned into plain HTML at build time.
-
-## What is inside `page.tsx`
-
-| Part | What it is |
+| File | Kind |
 | --- | --- |
-| `metadata` | Page title and description for the browser tab and Google. |
-| `groups` | The 3 working groups (Curricula, Communication, Implementation) with an icon and text. |
-| `leadership` | The leaders shown on the page. |
-| `countries` | The list of countries where Sankofa is active. |
-| `AboutPage()` | The page itself. Uses `PageHero` at the top, then `Section` blocks. |
+| `page.tsx` | RSC, statically prerendered |
 
-## To change the text
+## Data (module-level constants)
 
-Edit the arrays at the top of `page.tsx`. The page loops over them, so you do
-not need to touch the HTML below.
+| Const | Shape | Rendered as |
+| --- | --- | --- |
+| `groups` | `{ icon: LucideIcon, title, … }[]` — the 3 working groups | icon cards |
+| `leadership` | `{ name, role, org, photo }[]` — photo path in `public/members/` | leadership cards |
+| `countries` | `string[]` | country chips |
+
+## Composition
+
+`PageHero` → `Section`s with `SectionHeader`, `next/image`, lucide icons
+(`BookOpenCheck`, `Radio`, `Rocket`, `ArrowRight`) and a `ButtonLink` call to
+action.
+
+## Editing
+
+Change the constants; the JSX maps over them. Adding an item needs no markup
+change. Icons must be imported from `lucide-react`.

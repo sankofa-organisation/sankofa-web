@@ -1,27 +1,19 @@
-# `src/app/pilot/` — the pilot story editor
+# `src/app/pilot/` — authoring tools
 
-| File | URL |
-| --- | --- |
-| `create/page.tsx` | `/pilot/create` |
+Singular `pilot/` holds internal tools; the public pages are under `pilots/`.
 
-(Note: `pilot` here is **singular**. The public pages are in `pilots/`, plural.)
+| Route | File | Notes |
+| --- | --- | --- |
+| `/pilot/create` | `create/page.tsx` | Story editor. `robots: { index: false, follow: false }`. Not linked from navigation. |
 
-## What it is
+The page is a thin RSC wrapper around the client app `<PilotEditor/>`
+(`src/components/pilot-editor/editor.tsx`). It prerenders an empty shell;
+all state is created in the browser.
 
-A small Word-like tool to **write a new pilot story** with headings,
-paragraphs, quotes, lists, tables, photos and videos, and see a live preview.
+Back end: `src/app/api/pilot-drafts` and `src/app/api/pilot-uploads`, which
+write to disk only when `editorWritesAllowed()` is true (dev, or
+`PILOT_EDITOR_ENABLED=true`).
 
-`create/page.tsx` is very small. It only:
-
-1. Sets `robots: { index: false }` so Google does not show this tool.
-2. Renders `<PilotEditor />` from `src/components/pilot-editor/editor.tsx`.
-
-All the real work is in `src/components/pilot-editor/` and
-`src/lib/pilot-draft.ts`. Read the README in `src/components/pilot-editor/`.
-
-## How a story goes live
-
-1. Write it at `/pilot/create` (run `npm run dev` on your computer).
-2. Click **Copy as TypeScript**.
-3. Paste the code into `src/lib/pilots.ts`.
-4. Build and deploy again.
+Output of the tool is TypeScript pasted into `src/lib/pilots.ts`; it does not
+publish anything itself. Full description: root README §9 and
+`src/components/pilot-editor/README.md`.

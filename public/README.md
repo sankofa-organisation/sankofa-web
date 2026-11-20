@@ -1,34 +1,35 @@
-# `public/` — images and files served as they are
+# `public/` — static assets
 
-Every file in this folder can be opened by its path, with `public` removed.
+Served as-is from the site root by Next.js (`public/x.png` → `/x.png`).
+Reference with absolute paths without the `public` prefix. Files here are
+**publicly downloadable**, including this README — never put private data here.
 
-```
-public/logo.png            →  https://<site>/logo.png
-public/members/Amira.png   →  https://<site>/members/Amira.png
-```
-
-In code, write the path **starting with `/`** and without `public`:
-
-```tsx
-<Image src="/image.jpg" alt="..." width={800} height={600} />
-```
-
-> Note: this README is also public (`/README.md`). Do not write secrets here.
+Images are normally rendered through `next/image`, which resizes and converts
+them on demand; originals can therefore be large, but keep them reasonable
+(≤ ~2 MB) for build/deploy size.
 
 ## Files
 
-| File | Used in |
+| Path | Used by |
 | --- | --- |
-| `logo.png` | Header, footer and home hero. **Currently hidden** (commented out — "asked to temporaly remove"). The file is kept. |
-| `image.jpg` | Home hero background photo (`src/components/home/hero.tsx`). |
-| `image1.jpg`, `image2.jpg`, `image3.jpg` | Photo cards on the home page (`src/app/page.tsx`). |
-| `contact.png` | Photo on the Contact page. |
-| `sankofa-bird.jpg` | Not used in the code right now. |
-| `file.svg`, `globe.svg`, `next.svg`, `vercel.svg`, `window.svg` | Default files from `create-next-app`. Not used. Safe to delete later. |
+| `logo.png` (1536×1024) | header, footer, hero card — all **currently commented out** |
+| `image.jpg` | `components/home/hero.tsx` background |
+| `image1.jpg`, `image2.jpg`, `image3.jpg` | `app/page.tsx` → `pillars[].image` |
+| `contact.png` | `app/contact/page.tsx` |
+| `sankofa-bird.jpg` | unused |
+| `file.svg`, `globe.svg`, `next.svg`, `vercel.svg`, `window.svg` | unused `create-next-app` leftovers |
+
+Favicons are **not** here; they are `src/app/icon.png` and
+`src/app/apple-icon.png` (Next file-based metadata).
 
 ## Folders
 
-| Folder | What is inside |
+| Folder | Contents |
 | --- | --- |
-| [`members/`](members/README.md) | Member photos for the Members page. |
-| [`pilots/`](pilots/README.md) | Photos (and videos) for each pilot story. |
+| [`members/`](members/README.md) | portraits for `/members` and `/about` |
+| [`pilots/`](pilots/README.md) | story media, one folder per pilot slug |
+
+## Git
+
+`.gitignore` excludes `*.mp4`, `*.mov`, `*.avi`, `*.tiff` and similar large
+media. Such files must be deployed separately (see root README §15).

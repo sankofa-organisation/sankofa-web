@@ -1,10 +1,8 @@
-# `Tanzania Pilots/` — raw material (not code)
+# `Tanzania Pilots/` — source material (not used by code)
 
-Source material for the Tanzania pilot story (`/pilots/tanzania-network`).
+Raw still frames (`tanzania.mp4 N.jpeg`) extracted from Tanzania field video.
+Selected images were renamed and copied to `public/pilots/tanzania-network/`
+for the `/pilots/tanzania-network` story.
 
-| File | What it is |
-| --- | --- |
-| `tanzania.mp4 N.jpeg` | Still frames taken from a Tanzania video. |
-
-Nothing in the code reads this folder. The pictures used on the site were
-copied, renamed and put in `public/pilots/tanzania-network/`.
+Nothing imports this folder and it is not served. It can be moved out of the
+repo (e.g. to shared storage) to reduce repo size.

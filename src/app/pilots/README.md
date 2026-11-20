@@ -1,21 +1,21 @@
-# `src/app/pilots/` — the pilot projects pages
+# `src/app/pilots/` — `/pilots` and `/pilots/[slug]`
 
-| File | URL | What it shows |
+| File | URL | Rendering |
 | --- | --- | --- |
-| `page.tsx` | `/pilots` | A card for every pilot project. |
-| `[slug]/page.tsx` | `/pilots/<slug>` | The full story of one pilot. See [`[slug]/README.md`](%5Bslug%5D/README.md). |
+| `page.tsx` | `/pilots` | static |
+| `[slug]/page.tsx` | `/pilots/<slug>` | SSG — see [`[slug]/README.md`](%5Bslug%5D/README.md) |
 
-## `page.tsx` (the list)
+## `/pilots` index
 
-- Reads the `pilots` array from `src/lib/pilots.ts` and splits it in two:
-  - `featured` = pilots **with** a story. Shown big, with the hero photo,
-    tag, date and title, and a link to `/pilots/<slug>`.
-  - `rest` = pilots **without** a story. Shown as smaller cards with name,
-    country, status badge and the short `body` text. No link.
-- The badge color comes from `statusStyles` (also in `src/lib/pilots.ts`).
+Source: `pilots` from `src/lib/pilots.ts`, split in the component:
 
-## To add a pilot
+```ts
+const featured = pilots.filter((p) => p.story);   // full-width cards, image side alternates
+const rest     = pilots.filter((p) => !p.story);  // compact cards, no link
+```
 
-Add it to the `pilots` array in `src/lib/pilots.ts`. A pilot without a `story`
-is fine — it just shows a card. To write a story, use the editor at
-`/pilot/create` (see `src/app/pilot/README.md`).
+- Featured cards link to `/pilots/${slug}` and show `story.hero`, `story.tag`,
+  `story.date` (`<time dateTime>`), `story.title`.
+- Compact cards show `name`, `country`, status badge (`statusStyles[status]`)
+  and `body`.
+- Array order in `lib/pilots.ts` = display order.

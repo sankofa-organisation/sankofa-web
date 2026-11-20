@@ -1,41 +1,83 @@
-# `src/lib/` — data and helper functions
+# `src/lib/` — types, content, logic
 
-Code here does **not** draw pages (except `rich-text.tsx`). It holds the site's
-data and shared logic.
+No UI here (except `rich-text.tsx`, which returns React nodes). Must not
+import from `app/` or `components/`.
 
-| File | What is inside |
-| --- | --- |
-| `nav.ts` | The menu links. `primaryNav` = the main menu (Introduction, Curriculum, Pilot Projects, About Us, Members, News, Contact). `portalNav` = Member Portal links (`/portal/...`). Used by the header and footer. **Note:** the `/portal` pages are not built yet, so these links show the 404 page. |
-| `members.ts` | Type `Member` (name, country, groups) and the `members` list (June 2026 list). **No emails or phone numbers on purpose** — do not add them back. `WorkingGroup` = `"Curricula" \| "Communication" \| "Implementation"`. |
-| `pilots.ts` | The **main content file** for pilots. Types (`Pilot`, `PilotStory`, `StoryBlock`, `Media`, `PilotStatus`), the 3 full stories (`bananaFibreStory`, `echipparraStory`, `tanzaniaStory`), the `pilots` list (6 pilots), `statusStyles` (badge colors), `getPilot(slug)` and `pilotsWithStories`. |
-| `pilot-draft.ts` | Logic for the story editor (works in the browser). The `PilotDraft` type, empty templates (`createEmptyDraft`, `emptyBlock`), `slugify`, word count and reading time (200 words = 1 min), `validateDraft`, saving drafts in `localStorage`, and `toTypeScript` (turns a draft into code for `pilots.ts`). |
-| `pilot-editor-server.ts` | Logic for the editor **APIs** (server only, uses Node `path`). Where to save (`draftsDir`, `uploadsRoot`), `editorWritesAllowed()`, `forbidden()`, and `safeSlug()` which blocks bad file paths. |
-| `rich-text.tsx` | `renderInline(text)`: turns `**bold**`, `_italic_` and `[label](url)` inside a plain string into real HTML. Outside links open in a new tab. |
-| `cn.ts` | `cn(...)`: joins class names. `clsx` drops empty/false values, `tailwind-merge` removes clashes (e.g. `p-2` + `p-4` → `p-4`). |
+| File | Runtime | Exports |
+| --- | --- | --- |
+| `pilots.ts` | both | `PilotStatus`, `StoryBlock`, `Media`, `PilotStory`, `Pilot`, `pilots`, `statusStyles`, `getPilot`, `pilotsWithStories` |
+| `members.ts` | both | `WorkingGroup`, `Member`, `members` |
+| `nav.ts` | both | `NavItem`, `primaryNav`, `portalNav` |
+| `pilot-draft.ts` | both (browser APIs guarded) | editor model + logic (below) |
+| `pilot-editor-server.ts` | **server only** (`node:path`, `process.cwd()`) | `editorWritesAllowed`, `draftsDir`, `uploadsRoot`, `forbidden`, `safeSlug` |
+| `rich-text.tsx` | both | `renderInline(text): ReactNode[]` |
+| `cn.ts` | both | `cn(...ClassValue[]) = twMerge(clsx(...))` |
 
-## Story blocks (from `pilots.ts`)
+## `pilots.ts` — pilot content (~780 lines)
 
 ```ts
-type StoryBlock =
-  | { type: "heading";   text: string }
-  | { type: "paragraph"; text: string }
-  | { type: "quote";     text: string; attribution?: string }
-  | { type: "list";      items: string[] }
-  | { type: "numbered";  items: string[] }
-  | { type: "pathway";   steps: string[] }      // steps with arrows between
-  | { type: "table";     caption?: string; columns: string[]; rows: string[][] }
-  | { type: "media";     items: Media[] };      // images and/or videos
+type Pilot = { slug; name; country; status: PilotStatus; body; story?: PilotStory };
 ```
 
-This is a **union type**. The `type` field tells TypeScript (and the
-`switch` in `story-view.tsx`) which other fields exist.
+- Three story objects (`bananaFibreStory`, `echipparraStory`, `tanzaniaStory`),
+  each with a folder const (`UG`, `KL`, `TZ`) for media paths.
+- `pilots: Pilot[]` — 6 entries; array order = display order on `/pilots`.
+- `getPilot(slug)` — linear `find`.
+- `pilotsWithStories` — filtered with a type guard, so `p.story` is
+  non-optional in consumers (`generateStaticParams`).
+- `statusStyles` — `Record<PilotStatus, string>` badge classes.
 
-## To add a block type
+Full type definitions: root README §8.1. `StoryBlock` is a discriminated union
+on `type`; switches over it are exhaustive, so adding a member produces
+compile errors at every place that must handle it:
 
-1. Add it to `StoryBlock` in `pilots.ts`.
-2. Draw it in `Block` in `src/components/pilot-story/story-view.tsx`.
-3. In `pilot-draft.ts`: add it to `blockTypes`, `blockLabels`, `emptyBlock`,
-   `countWords` and `blockSource`.
-4. Add its inputs in `src/components/pilot-editor/block-editor.tsx`.
+1. `components/pilot-story/story-view.tsx` → `Block`
+2. `lib/pilot-draft.ts` → `blockTypes`, `blockLabels`, `emptyBlock`,
+   `countWords`, `blockSource`, (optional) `validateDraft`
+3. `components/pilot-editor/block-editor.tsx` → `BlockBody`
+4. `components/pilot-editor/editor.tsx` → `blockPreview`
 
-TypeScript will show errors in every `switch` you forgot. That helps you.
+## `members.ts`
+
+`Member = { name, country, groups: WorkingGroup[] }`. Contact fields were
+removed deliberately — do not add them back (see root README §7.3).
+`name` is used as the React key and the photo-map key, so it must be unique
+and match `photos` in `app/members/page.tsx` exactly.
+
+## `nav.ts`
+
+`NavItem = { label, href, description? }`. `primaryNav` drives header and
+footer; `portalNav` points to `/portal/*`, which is **not implemented** (404).
+
+## `pilot-draft.ts` — editor model
+
+| Export | Purpose |
+| --- | --- |
+| `PilotDraft` | `{ id, slug, name, country, status, body, story, updatedAt }` |
+| `BlockType`, `blockTypes`, `blockLabels`, `statuses`, `aspects` | enumerations for UI pickers |
+| `DRAFTS_KEY` | `"sankofa.pilot-drafts.v1"` (bump the version if the shape changes) |
+| `slugify(s)` | NFKD, strip diacritics, `[^a-z0-9]+ → -`, max 60 |
+| `newId()` | `draft-<time36>-<rand6>` |
+| `emptyMedia(kind)`, `emptyBlock(type)`, `createEmptyDraft()` | factories |
+| `formatDisplayDate(iso)` | `en-GB` long date |
+| `countWords(story)`, `readingTimeFor(story)` | words across lead + all blocks; `max(1, round(words/200))` min read |
+| `draftToPilot(draft)` | `PilotDraft → Pilot` |
+| `Issue`, `validateDraft(draft)` | `{ field, message, level: "error"\|"warning" }[]`; `field` is a form field name or `block-<index>` |
+| `loadLocalDrafts`, `persistLocalDraft`, `removeLocalDraft` | `localStorage` CRUD, SSR-safe, keeps 25 newest, swallows quota errors on write |
+| `toTypeScript(draft)` | code generator: `const <camelSlug>Story: PilotStory = {…}` + a `pilots` entry; strings escaped with `JSON.stringify` |
+
+## `pilot-editor-server.ts`
+
+See `src/app/api/README.md`. Importing this into a client component will fail
+the build (Node built-ins).
+
+## `rich-text.tsx`
+
+```ts
+const INLINE = /(\*\*[^*\n]+\*\*|_[^_\n]+_|\[[^\]\n]+\]\([^)\s]+\))/g;
+```
+
+`text.split(INLINE)` → each part becomes `<strong>`, `<em>`, `<a>` or a text
+fragment. Single level, no nesting, no escaping syntax. External links
+(`^https?://`) get `target="_blank" rel="noreferrer noopener"`. Output is
+React elements, never `dangerouslySetInnerHTML`, so it is XSS-safe.

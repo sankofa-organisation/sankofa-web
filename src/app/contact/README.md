@@ -1,20 +1,22 @@
-# `src/app/contact/` — the Contact page (`/contact`)
+# `src/app/contact/` — `/contact`
 
-**File:** `page.tsx`
-
-## What is inside `page.tsx`
-
-| Part | What it is |
+| File | Kind |
 | --- | --- |
-| `EMAIL` | The public email: `info@teachsankofa.org`. |
-| `socials` | Facebook, X and LinkedIn links shown on the page. |
-| `ContactPage()` | Page with a photo (`public/contact.png`) and the form. |
+| `page.tsx` | RSC, statically prerendered |
 
-## How the form sends messages
+## Data
 
-The form is the `ContactForm` component in
-`src/components/contact/contact-form.tsx`. **There is no email server.** It
-builds a `mailto:` link and opens the visitor's email app. See that folder's
-README for details.
+| Const | Value |
+| --- | --- |
+| `EMAIL` | `info@teachsankofa.org` (shown as a `mailto:` link) |
+| `socials` | `{ label, href }[]` — Facebook, X, LinkedIn |
 
-If you change the email address, change it in **both** files.
+## Composition
+
+`PageHero` → two-column `Section`: image `public/contact.png` + contact info,
+and the client component `ContactForm`
+(`src/components/contact/contact-form.tsx`).
+
+The form has no backend; it opens the visitor's mail client via `mailto:`.
+`EMAIL` here and `RECIPIENT` in the form component are separate constants —
+keep them in sync.
