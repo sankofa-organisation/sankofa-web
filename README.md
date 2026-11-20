@@ -56,9 +56,7 @@ sankofa-web/
 │   ├── components/       ← reusable pieces of the pages
 │   └── lib/              ← data and helper functions (no UI)
 ├── public/               ← images and files served as they are
-├── instructions/         ← PDF briefs from the Sankofa team (not code)
-├── Tanzania Pilots/      ← raw photos + PDF from the Tanzania pilots (not code)
-├── india-pilot.pdf       ← report used to write the India pilot story
+├── Tanzania Pilots/      ← raw photos from the Tanzania pilots (not code)
 ├── next.config.ts        ← Next.js settings (empty for now)
 ├── tsconfig.json         ← TypeScript settings. "@/..." means "src/..."
 ├── postcss.config.mjs    ← turns on Tailwind
