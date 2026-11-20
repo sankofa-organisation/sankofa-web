@@ -59,7 +59,6 @@ sankofa-web/
 ├── instructions/         ← PDF briefs from the Sankofa team (not code)
 ├── Tanzania Pilots/      ← raw photos + PDF from the Tanzania pilots (not code)
 ├── india-pilot.pdf       ← report used to write the India pilot story
-├── Sankofa 06_08_26.xlsx ← member list; src/lib/members.ts was made from it
 ├── next.config.ts        ← Next.js settings (empty for now)
 ├── tsconfig.json         ← TypeScript settings. "@/..." means "src/..."
 ├── postcss.config.mjs    ← turns on Tailwind
@@ -69,6 +68,10 @@ sankofa-web/
 
 **Important shortcut:** in the code, `@/` means the `src/` folder.
 So `import { cn } from "@/lib/cn"` loads `src/lib/cn.ts`.
+
+**Privacy rule:** do not put members' emails or phone numbers in this repo.
+The site does not need them, and anything in the code can end up in the
+public page.
 
 ---
 
@@ -125,7 +128,7 @@ every page:
 | --- | --- |
 | Top menu and footer links | `src/lib/nav.ts` |
 | Pilot projects + their full stories | `src/lib/pilots.ts` |
-| Members list (name, country, email, phone, groups) | `src/lib/members.ts` |
+| Members list (name, country, groups) | `src/lib/members.ts` |
 | Member photos | `src/app/members/page.tsx` (the `photos` map) + `public/members/` |
 | News posts | inside `src/app/news/page.tsx` |
 | Home page text | inside `src/app/page.tsx` and `src/components/home/` |
@@ -140,7 +143,7 @@ every page:
 1. Open `src/lib/members.ts`.
 2. Add one line to the `members` list:
    ```ts
-   { name: "Jane Doe", country: "Ghana", email: "jane@example.com", telephone: "+233 ...", groups: ["Curricula"] },
+   { name: "Jane Doe", country: "Ghana", groups: ["Curricula"] },
    ```
 3. (Optional) Put a photo in `public/members/Jane.jpg` and add
    `"Jane Doe": "/members/Jane.jpg"` to the `photos` map in

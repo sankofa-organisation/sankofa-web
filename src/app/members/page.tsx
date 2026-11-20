@@ -64,7 +64,7 @@ export default function MembersPage() {
               const photo = photos[m.name];
               return (
                 <li
-                  key={m.email}
+                  key={m.name}
                   className="flex min-h-[170px] overflow-hidden rounded-2xl border border-border bg-surface shadow-sm transition-shadow hover:shadow-md"
                 >
                   {/* Left half — portrait or initials panel */}

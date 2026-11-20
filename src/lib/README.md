@@ -6,7 +6,7 @@ data and shared logic.
 | File | What is inside |
 | --- | --- |
 | `nav.ts` | The menu links. `primaryNav` = the main menu (Introduction, Curriculum, Pilot Projects, About Us, Members, News, Contact). `portalNav` = Member Portal links (`/portal/...`). Used by the header and footer. **Note:** the `/portal` pages are not built yet, so these links show the 404 page. |
-| `members.ts` | Type `Member` (name, country, email, telephone, groups) and the `members` list. Made from `Sankofa 06_08_26.xlsx` (June 2026 list). `WorkingGroup` = `"Curricula" \| "Communication" \| "Implementation"`. |
+| `members.ts` | Type `Member` (name, country, groups) and the `members` list (June 2026 list). **No emails or phone numbers on purpose** — do not add them back. `WorkingGroup` = `"Curricula" \| "Communication" \| "Implementation"`. |
 | `pilots.ts` | The **main content file** for pilots. Types (`Pilot`, `PilotStory`, `StoryBlock`, `Media`, `PilotStatus`), the 3 full stories (`bananaFibreStory`, `echipparraStory`, `tanzaniaStory`), the `pilots` list (6 pilots), `statusStyles` (badge colors), `getPilot(slug)` and `pilotsWithStories`. |
 | `pilot-draft.ts` | Logic for the story editor (works in the browser). The `PilotDraft` type, empty templates (`createEmptyDraft`, `emptyBlock`), `slugify`, word count and reading time (200 words = 1 min), `validateDraft`, saving drafts in `localStorage`, and `toTypeScript` (turns a draft into code for `pilots.ts`). |
 | `pilot-editor-server.ts` | Logic for the editor **APIs** (server only, uses Node `path`). Where to save (`draftsDir`, `uploadsRoot`), `editorWritesAllowed()`, `forbidden()`, and `safeSlug()` which blocks bad file paths. |
