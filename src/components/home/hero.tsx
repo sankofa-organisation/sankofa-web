@@ -166,7 +166,11 @@ export function Hero() {
           </motion.p>
         </div>
 
-        {/* 3D tilt image */}
+        {/* asked to temporaly remove
+            (logo card. Its inner notes were turned into // lines so this
+            comment does not close early. To restore: delete this wrapper and
+            turn the // lines back into normal JSX comments.)
+        // 3D tilt image
         <motion.div
           initial={reduce ? false : { opacity: 0, scale: 0.92 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -180,19 +184,19 @@ export function Hero() {
             style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
             className="relative"
           >
-            {/* depth: soft glow behind */}
+            // depth: soft glow behind
             <div
               aria-hidden
               style={{ transform: "translateZ(-60px)" }}
               className="absolute inset-6 rounded-[2rem] bg-primary/20 blur-2xl"
             />
-            {/* depth: offset plate */}
+            // depth: offset plate
             <div
               aria-hidden
               style={{ transform: "translateZ(-20px)" }}
               className="absolute inset-0 translate-x-4 translate-y-5 rounded-3xl bg-secondary/20"
             />
-            {/* the carving */}
+            // the carving
             <div
               style={{ transform: "translateZ(0px)" }}
               className="relative grid aspect-square place-items-center overflow-hidden rounded-3xl border border-border-strong bg-surface p-10 shadow-2xl"
@@ -206,14 +210,14 @@ export function Hero() {
                 sizes="(max-width: 1024px) 90vw, 38vw"
                 className="h-full w-full object-contain"
               />
-              {/* sheen */}
+              // sheen
               <div
                 aria-hidden
                 className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-transparent via-white/0 to-white/15"
               />
             </div>
 
-            {/* depth: floating gold egg orb */}
+            // depth: floating gold egg orb
             <motion.div
               aria-hidden
               style={{ transform: "translateZ(70px)" }}
@@ -221,7 +225,7 @@ export function Hero() {
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               className="absolute -right-5 top-10 h-16 w-16 rounded-full bg-gradient-to-br from-accent to-accent-strong shadow-lg ring-4 ring-background"
             />
-            {/* depth: floating badge */}
+            // depth: floating badge
             <motion.div
               style={{ transform: "translateZ(50px)" }}
               animate={reduce ? undefined : { y: [0, 8, 0] }}
@@ -235,6 +239,7 @@ export function Hero() {
             </motion.div>
           </motion.div>
         </motion.div>
+        */}
       </div>
 
       {/* Scroll cue */}

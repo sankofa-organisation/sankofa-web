@@ -1,5 +1,6 @@
 import Link from "next/link";
-import Image from "next/image";
+// asked to temporaly remove (logo) — Image was only used for the logo
+// import Image from "next/image";
 import { primaryNav, portalNav } from "@/lib/nav";
 import { LINKEDIN_URL, SURVEY_URL } from "@/components/follow-linkedin";
 
@@ -9,6 +10,7 @@ export function SiteFooter() {
       <div className="container-page py-14">
         <div className="grid gap-10 md:grid-cols-[1.5fr_1fr_1fr]">
           <div className="max-w-sm">
+            {/* asked to temporaly remove
             <Link
               href="/"
               className="flex items-center gap-2.5 text-[#f3ebdb]"
@@ -16,7 +18,8 @@ export function SiteFooter() {
             >
               <Image src="/logo.png" alt="Sankofa" width={80} height={80} className="h-20 w-20 object-contain" />
             </Link>
-            <p className="mt-4 text-sm leading-relaxed text-[#c9b89c]">
+            */}
+            <p className="text-sm leading-relaxed text-[#c9b89c]">
               Go back and fetch it. Community-led STREAM education rooted in
               local culture, daily life, and what&rsquo;s at hand.
             </p>

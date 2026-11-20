@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
+// asked to temporaly remove (logo) — Image was only used for the logo
+// import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Menu, X, Lock } from "lucide-react";
 import { primaryNav, portalNav } from "@/lib/nav";
@@ -21,6 +22,7 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur-md">
       <div className="container-page flex h-24 items-center justify-between gap-4">
+        {/* asked to temporaly remove
         <Link
           href="/"
           className="flex items-center gap-2.5 rounded-md text-foreground"
@@ -28,6 +30,7 @@ export function SiteHeader() {
         >
           <Image src="/logo.png" alt="Sankofa" width={88} height={88} className="h-20 w-20 object-contain" />
         </Link>
+        */}
 
         {/* Desktop nav */}
         <nav

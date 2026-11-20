@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Home, ArrowLeft, Compass } from "lucide-react";
-import { SankofaMark } from "@/components/sankofa-mark";
+// asked to temporaly remove (logo)
+// import { SankofaMark } from "@/components/sankofa-mark";
 import { ButtonLink } from "@/components/ui/button";
 
 export const metadata: Metadata = {
@@ -23,9 +24,11 @@ export default function NotFound() {
         className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(110%_80%_at_50%_0%,#fbf6ec_0%,#faf5ec_50%,#f3e9d6_100%)]"
       />
       <div className="container-page flex min-h-[70vh] flex-col items-center justify-center py-20 text-center">
+        {/* asked to temporaly remove
         <SankofaMark className="h-14 w-14 text-primary" />
+        */}
 
-        <p className="mt-8 font-display text-7xl font-bold leading-none text-primary sm:text-8xl">
+        <p className="font-display text-7xl font-bold leading-none text-primary sm:text-8xl">
           404
         </p>
         <h1 className="mt-4 text-3xl sm:text-4xl">This path leads nowhere</h1>
